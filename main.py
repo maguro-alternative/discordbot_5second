@@ -33,44 +33,28 @@ async def on_ready():
 async def on_voice_state_update(member, before, after):
     # gane=random.randint(0,u-1)
     # await client.change_presence(activity=discord.Game(name=act[gane]))
-    channel = client.get_channel(838937936283828224)
-    backup_channel = client.get_channel(867666631197982741)
+    channel = client.get_channel(838937936283828224)    # メッセージを送信するチャンネルid
+    backup_channel = client.get_channel(867666631197982741) # 送ったメッセージのidを送信し、記録するチャンネルid
     #members = channel.members
     embeduser = ''
-    i={client.get_channel(838937936283828225).name:0}
+    # for channels in client.get_all_channels():
+        # if(isinstance(channels,discord.channel.VoiceChannel)==True): # and channel.topic
+          # i={channels.name,isum}
+          # print("チャンネルID：" + str(channel.id))
+          # print(type(channel))
     isum=0
-    embeduser, i[client.get_channel(838937936283828225).name] = meme(
-        member, embeduser,
-        client.get_channel(838937936283828225).name,
-        list(client.get_channel(838937936283828225).voice_states.keys()))
-    embeduser, i[client.get_channel(838965872239443978).name] = meme(
-        member, embeduser,
-        client.get_channel(838965872239443978).name,
-        list(client.get_channel(838965872239443978).voice_states.keys()))
-    embeduser, i[client.get_channel(838966052628463667).name] = meme(
-        member, embeduser,
-        client.get_channel(838966052628463667).name,
-        list(client.get_channel(838966052628463667).voice_states.keys()))
-    embeduser, i[client.get_channel(838966131221725215).name] = meme(
-        member, embeduser,
-        client.get_channel(838966131221725215).name,
-        list(client.get_channel(838966131221725215).voice_states.keys()))
-    embeduser, i[client.get_channel(871289390549323776).name] = meme(
-        member, embeduser,
-        client.get_channel(871289390549323776).name,
-        list(client.get_channel(871289390549323776).voice_states.keys()))
-    embeduser, i[client.get_channel(871289517569609738).name] = meme(
-        member, embeduser,
-        client.get_channel(871289517569609738).name,
-        list(client.get_channel(871289517569609738).voice_states.keys()))
+    i={"":0}
+    for channels in client.get_all_channels():  # サーバー内のチャンネルidをすべて取得
+        if(isinstance(channels,discord.channel.VoiceChannel)==True): # ボイスチャンネルのidの場合
+          i[channels.name]=isum  # 連想配列を使用しボイスチャンネルの名前で管理
+          embeduser,i[channels.name]=meme(member,embeduser,channels.name,list(channels.voice_states.keys())) # ユーザー名、人数をチャンネルごとに取得
+          isum+=i[channels.name]
+    
     embed = discord.Embed(title='通話中', description=embeduser)
     if before.self_stream is False and after.self_stream is True:
-      embed = discord.Embed(title=f'<@{member.name}>が{after.channel.name}にて配信中！！', description=embeduser)
+      embed = discord.Embed(title=f'{member.name}が{after.channel.name}にて配信中！！', description=embeduser)
 
-    for j in i.values():
-      # print(j)
-      isum+=j
-    print(i)
+    # print(i)
     if (isum == 1 and before.channel is None):
         message = await channel.send(embed=embed)
         print(message.id)
