@@ -141,6 +141,27 @@ async def on_voice_state_update(member, before, after):
                 await channel.send(
                     f"@everyone <@{member.id}> が、{after.channel.name}で「{member.activities[0].name}」の配信を始めました。"
                 )
+                embed = discord.Embed(title='配信タイトル', description=f'{member.activities[0].name}')
+
+                embed.set_author(
+                  name=member.name, # ユーザー名
+                  icon_url=member.avatar_url # アイコンを設定
+                )
+
+                embed.add_field(name="チャンネル",value=after.channel.name)
+
+                try:
+                  embed.add_field(name=member.activities[0].details,value=member.activities[0].state)
+                  embed.set_image(url=member.activities[0].large_image_url)
+                except IndexError:
+                  print("IndexError....");
+                except AttributeError:
+                  try:
+                    embed.add_field(name=member.activities[0].details,value=member.activities[0].state)
+                  except AttributeError:
+                    print("AttributeError.....")
+                await channel.send(embed=embed)
+                # print(member.activities[0].large_image_url)
             # 存在しない場合
             except IndexError:
                 await channel.send(
