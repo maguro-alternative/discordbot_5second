@@ -11,21 +11,29 @@ from server import keep_alive
 intents = discord.Intents().all()
 client = discord.Client(intents=intents)
 
-# botがプレイしているゲーム
-act = [
-    "MONSTER HUNTER RISE", "FINAL FANTASY VII",
-    "Yu-Gi-Oh! Legacy of the Duelist Link Evolution", "Among Us",
-    "Devil May Cry 5", "ウマオカン プリティーダービー ～勝ち取りたいものもない～"
-]
-u = 0
-for e in act:
-    u += 1
-
 # 起動、再起動時
 @client.event
 async def on_ready():
+    # botがプレイしているゲーム
+    act = [
+        "MONSTER HUNTER RISE", "FINAL FANTASY VII",
+        "Yu-Gi-Oh! Legacy of the Duelist Link Evolution", "Among Us",
+        "Devil May Cry 5", "ウマオカン プリティーダービー ～勝ち取りたいものもない～",
+        "Hikakin_mania","ゼERO"
+    ]
+    u = 0
+    for e in act:
+        u += 1
     gane = random.randint(0, u - 1) #プレイしているゲームをランダムに設定
-    await client.change_presence(activity=discord.Game(name=act[gane])) #プレイしているゲームをステータスに表示
+
+    if(act[gane]=="Hikakin_mania" or act[gane]=="ゼERO"):
+      activity = discord.Activity(type=discord.ActivityType.watching, name=act[gane])
+    else:
+      #プレイしているゲームをステータスに表示
+      activity=discord.Game(name=act[gane])
+
+    await client.change_presence(activity=activity)
+
     backup_channel = client.get_channel(867666631197982741) 
     # 再起動時にメッセージidが喪失するためバックアップしているチャンネルから再取得
     mst = await backup_channel.fetch_message(backup_channel.last_message_id)
@@ -116,7 +124,6 @@ async def on_voice_state_update(member, before, after):
         mst = await channel.fetch_message(message3)
         await mst.edit(embed=embed)
     if before.channel and after.channel:
-        channel = client.get_channel(838937936283828224)
         # カメラ配信開始時
         if before.self_video is False and after.self_video is True:
             print("video started!")
